@@ -65,7 +65,7 @@ if (isset($_GET['now'])) {
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h4 class="modal-title">Details For - <?php echo $fullname;?> 
-                                                <span class="">&#128669;</span></h4>
+                                                <span class=""></span></h4>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
@@ -74,19 +74,23 @@ if (isset($_GET['now'])) {
                                             <div class="modal-body">
 
 
-                                                <p><b>Seat Number :</b>
-                                                    <?php echo $row['seat'];
+                                            <p><b>Bus Number :</b>
+                                                    <?php echo ($row['bus_number']);
                                                         ?>
                                                 </p>
                                                 <p><b>Bus Name :</b>
                                                     <?php echo getBusName($row['bus_id']);
                                                         ?>
                                                 </p>
+                                                <p><b>Seat Number :</b>
+                                                    <?php echo $row['seat'];
+                                                        ?>
+                                                </p>
                                                 <p><b>Payment Date :</b>
                                                     <?php echo ($row['pd']);
                                                         ?>
                                                 </p>
-                                                <p><b>Amount Paid :</b> $
+                                                <p><b>Amount Paid :</b> ₱
                                                     <?php echo ($row['amount']);
                                                         ?>
                                                 </p>
@@ -99,46 +103,7 @@ if (isset($_GET['now'])) {
                                                     if (isScheduleActive($row['schedule_id'])) echo '<a href="individual.php?page=print&print=' . $id . '"><button  class="btn btn-success">Print Ticket</button></a>';
                                                     else echo '<button disabled="disabled" class="btn btn-danger">Ticket Has Been Expired</button>'; ?>
                                                     
-                                                    <?php
-                                                     $fet = querySchedule('future');
-                                                     $msg = "";
-                                                     $output = "<option value=''>Choose One Or Skip To Leave As It Is</option>";
-                                                     if ($fet->num_rows < 1) $msg = "<span class='text-danger'>No Upcoming Schedules Yet</span>";
-                            while ($fetch = $fet->fetch_assoc()) {
-    //Check if the current date is same with Database scheduled date
-    $db_date = $fetch['date'];
-    if ($db_date == date('d-m-Y')) {
-        //Oh yes, so what should happen?
-        //Check for the time. If there is still about an hour left, proceed else, skip this data
-        $db_time = $fetch['time'];
-        $current_time = date('H:i');
-        if ($current_time >= $db_time) {
-            continue;
-        }
-    }
-    $fullname =  getRoutePath($fetch['route_id']);
-    $datetime = $fetch['date']. " / ". formatTime($fetch['time']);
-    $output .= "<option value='$fetch[id]'>$fullname - $datetime</option>";
-                            }
-                                                    if (isScheduleActive($row['schedule_id'])) echo '<div x-data="{ open: false }"><button @click="open = true" class="btn btn-dark float-right">Modify</button>
-                                                    <p x-show="open" @click.away="open = false">
-                                                    <form method="POST" >
-                                                    '.$msg.'
-                                                        <select class="form-control" name="s" required >
-                                                            '.$output.'
-                                                        </select>
-                                                        <input type="hidden" name="pk" value="'.$id.'">
-                                                        <input type="submit" name="modify" class="btn btn-primary" value="Submit Form" />
-                                                    </form>
-                                                    </p>
-                                                </div>';
-                                                   ?>
-
-<!-- Start -->
-
-    
-<!-- End -->
-                                  </div>
+                          
                                             <!-- /.modal-content -->
                                         </div>
                                         <!-- /.modal-dialog -->

@@ -2,7 +2,7 @@
 session_start();
 require_once '../conn.php';
 require_once '../constants.php';
-$class = "reg";
+$bus_name = "reg";
 ?>
 <?php
 $cur_page = 'signup';

@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../conn.php';
-$class = "signin";
+$bus_name = "signin";
 
 ?>
 <?php

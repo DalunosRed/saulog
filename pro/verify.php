@@ -52,11 +52,11 @@ if (isset($_GET['reference'])) {
       $reference = strtoupper($reference);
       $ins = $conn->query("INSERT INTO payment (passenger_id, schedule_id, amount, ref, date) VALUES ('$user_id','$schedule_id', '$paid', '$reference', '$date')");
       $code = genCode($schedule_id, $user_id, $class);
-    
+      $seat = genSeat($schedule_id, $class, $number);
       $payment_id = $conn->insert_id;
       if ($payment_id > 0) {
 
-        $conn->query("INSERT INTO booked (payment_id, schedule_id, user_id, code, class, no, date, seat) VALUES ('$payment_id','$schedule_id', '$user_id', '$code', '$class', '$number', '$date' , '$seat')");
+        $conn->query("INSERT INTO booked (payment_id, schedule_id, user_id, code, no, date, seat) VALUES ('$payment_id','$schedule_id', '$user_id', '$code', '$number', '$date' , '$seat')");
         unset($_SESSION['discount']);
         unset($_SESSION['amount']);
         unset($_SESSION['original']);

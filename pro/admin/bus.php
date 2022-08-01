@@ -52,10 +52,7 @@ $me = "?page=$source";
                                         <td><?php echo $fetch['plate_number']; ?></td>
                                         <td>
                                             <form method="POST">
-                                                <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                    data-target="#edit<?php echo $id ?>">
-                                                    Edit
-                                                </button> -
+                                               
 
                                                 <input type="hidden" class="form-control" name="bus"
                                                     value="<?php echo $id ?>" required id="">
@@ -69,48 +66,7 @@ $me = "?page=$source";
                                         </td>
                                     </tr>
 
-                                    <div class="modal fade" id="edit<?php echo $id ?>">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">Editing <?php echo $fullname;
-
-
-                                                                                        ?></h4>
-                                                    <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form action="" method="post">
-                                                        <input type="hidden" class="form-control" name="id"
-                                                            value="<?php echo $id ?>" required id="">
-                                                        <p>Bus Name : <input type="text" class="form-control"
-                                                                name="name" value="<?php echo $fetch['name'] ?>"
-                                                                required minlength="3" id=""></p>
-                                                        <p>Capacity : <input type="number" min='0'
-                                                                class="form-control"
-                                                                value="<?php echo $fetch['first_seat'] ?>"
-                                                                name="first_seat" required id="">
-                                                        </p>
-                                                      
-                                                        <p>
-
-                                                            <input class="btn btn-info" type="submit" value="Edit bus"
-                                                                name='edit'>
-                                                        </p>
-                                                    </form>
-                                                    <div class="modal-footer justify-content-between">
-                                                        <button type="button" class="btn btn-default"
-                                                            data-dismiss="modal">Close</button>
-                                                    </div>
-                                                </div>
-                                                <!-- /.modal-content -->
-                                            </div>
-                                            <!-- /.modal-dialog -->
-                                        </div>
-                                        <!-- /.modal -->
+                                    
                                         <?php
                                     }
                                         ?>
@@ -195,28 +151,6 @@ if (isset($_POST['submit'])) {
 }
 
 
-if (isset($_POST['edit'])) {
-    $name = $_POST['name'];
-    $first_seat = $_POST['first_seat'];
-    $plate_number = $_POST['plate_number'];
-    $id = $_POST['id'];
-    if (!isset($name, $first_seat, $plate_number)) {
-        alert("Fill Form Properly!");
-    } else {
-        $conn = connect();
-        //Check if bus exists
-        $check = $conn->query("SELECT * FROM bus WHERE name = '$name' ")->num_rows;
-        if ($check == 2) {
-            alert("bus name exists");
-        } else {
-            $ins = $conn->prepare("UPDATE bus SET name = ?, first_seat = ?, plate_number = ? WHERE id = ?");
-            $ins->bind_param("sssi", $name, $first_seat, $plate_number, $id);
-            $ins->execute();
-            alert("bus Modified!");
-            load($_SERVER['PHP_SELF'] . "$me");
-        }
-    }
-}
 
 if (isset($_POST['bus'])) {
     $con = connect();

@@ -19,7 +19,7 @@ date_default_timezone_set("Africa/Lagos");
 $date = date('D, d-M-Y h:i:s A');;
 $date_small = date('d-M-Y');;
 //INSERT YOUR OWN PAYSTACK API KEYS
-$paystack = "sk_test_b630a83128c105b683ddf5a9b4d622e6aff9adcd"; //Do not change this! Redirect URL http://localhost/train/pro/verify.php
+$paystack = "sk_test_8d83b04be25c2f1dd78d9e492712c2c89f6b80b2"; //Do not change this! Redirect URL http://localhost/train/pro/verify.php
 if (!function_exists('connect')) {
 
     function connect()
@@ -269,12 +269,40 @@ function sendMail($to, $subject, $msg)
     return 0;
 }
 
+function genSeat($id, $type, $number)
+{
+    $conn = connect();
+    $type_seat = $conn->query("SELECT bus.first_seat as first FROM schedule INNER JOIN bus ON bus.id = schedule.bus_id WHERE schedule.id = '$id'")->fetch_assoc();
+    $me = $type_seat[$type];
+    $query = $conn->query("SELECT SUM(no) AS no FROM booked WHERE schedule_id = '$id'")->fetch_assoc();
+    $no = $query['no'];
+    if ($no == null) $no = 1;
+    else $no++;
+    //Multiple Seats or Not
+    if ($number == 1) {
+        while (strlen($no) != strlen($me)) {
+            $no = "0" . $no;
+        }
+        return strtoupper(substr( 0, 1)) . "$no";
+    } else {
+        $start = $no;
+        $end = $no + ($number - 1);
+        while (strlen($start) != strlen($me)) {
+            $start = "0" . $start;
+        }
+        while (strlen($end) != strlen($me)) {
+            $end = "0" . $end;
+        }
+        $append = strtoupper(substr( 0, 1));
+
+        return $append . $start . " - " . $append . $end;
+    }
+}
 
 
 
 
-
-function genCode($id, $user, $class)
+function genCode($id, $user, $bus)
 {
     $conn = connect();
     $query = $conn->query("SELECT SUM(no) AS no FROM booked WHERE schedule_id = '$id'")->fetch_assoc();
@@ -400,7 +428,7 @@ function getRouteFromSchedule($id)
     return getRoutePath($q['id']);
 }
 
-function getFee($id, $type = 'plate')
+function getFee($id, $type = 'plate_number')
 {
     if ($type == 'bus_number') {
         $type = 'bus_number';
@@ -436,10 +464,11 @@ function getBusName($id)
     $val = connect()->query("SELECT name FROM bus WHERE id = '$id'")->fetch_assoc();
     return $val['name'];
 }
-function getPlateNumber($id)
+
+function getBusNum($id)
 {
-    $val = connect()->query("SELECT plate_number FROM bus WHERE id = '$id'")->fetch_assoc();
-    return $val['plate_number'];
+    $val = connect()->query("SELECT bus_number FROM schedule WHERE id = '$id'")->fetch_assoc();
+    return $val['bus_number'];
 }
 function alert($msg)
 {
@@ -457,7 +486,7 @@ function printClearance($id)
     ob_start();
     $con = connect();
     $me = $_SESSION['user_id'];
-    $getCount = (connect()->query("SELECT schedule.id as schedule_id, passenger.name as fullname, passenger.email as email, passenger.phone as phone, passenger.loc as loc, payment.amount as amount, payment.ref as ref, payment.date as payment_date, schedule.bus_id as bus_id, booked.code as code, booked.no as no, booked.class as class, booked.seat as seat, schedule.date as date, schedule.time as time FROM booked INNER JOIN schedule on booked.schedule_id = schedule.id INNER JOIN payment ON payment.id = booked.payment_id INNER JOIN passenger ON passenger.id = booked.user_id WHERE booked.id = '$id'"));
+    $getCount = (connect()->query("SELECT schedule.id as schedule_id, passenger.name as fullname, passenger.email as email, passenger.phone as phone, passenger.loc as loc, payment.amount as amount, payment.ref as ref, payment.date as payment_date, schedule.bus_id as bus_id, booked.code as code, booked.no as no, booked.seat as seat, schedule.date as date, schedule.time as time FROM booked INNER JOIN schedule on booked.schedule_id = schedule.id INNER JOIN payment ON payment.id = booked.payment_id INNER JOIN passenger ON passenger.id = booked.user_id WHERE booked.id = '$id'"));
     if ($getCount->num_rows != 1) die("Denied");
     $row = $getCount->fetch_assoc();
     $passenger_name = substr($fullname = ($row['fullname']), 0, 15);
@@ -476,7 +505,6 @@ function printClearance($id)
     $loc = $row['loc'];
     $seat = $row['seat'];
     $bus = getBusName($row['bus_id']);
-    $class = $row['class'];
     $payment_date = $row['payment_date'];
     $amount = $row['amount'];
     $file_name = preg_replace('/[^a-z0-9]+/', '-', strtolower($passenger_name)) . ".pdf";
@@ -574,7 +602,7 @@ function printClearance($id)
 <style>
 table th{font-weight:italic}
 </style>
-<h1 style="text-align:center"><img src="images/trainlg.png" width="100" height="100"/><br/>ONLINE TICKET RESERVATION SYSTEM<br/> BUS TICKET</h1> <div style="text-align:right; font-family:courier;font-weight:bold"><font size="+6">Ticket N<u>o</u>: $uniqueCode </font></div>
+<h1 style="text-align:center"><br/>SAULOG TRANSIT<br/> BUS TICKET</h1> <div style="text-align:right; font-family:courier;font-weight:bold"><font size="+6">Ticket N<u>o</u>: $uniqueCode </font></div>
 <table width="100%" border="1">
 <tr><th colspan="2" style="text-align:center"><b>Personal Data</b></th></tr>
 <tr><th><b>Full Name:</b></th><td>$fullname</td></tr>
@@ -583,12 +611,11 @@ table th{font-weight:italic}
 <tr><td colspan="2" style="text-align:center"><b>Trip Detail</b></td></tr>
 <tr><th><b>Route:</b></th><td>$route</td></tr>
 <tr><th><b>Bus:</b></th><td>$bus</td></tr>
-<tr><th><b>Class:</b></th><td>$class Class</td></tr>
 <tr><th><b>Seat Number:</b></th><td>$seat</td></tr>
 <tr><th><b>Date:</b></th><td>$date</td></tr>
 <tr><th><b>Time:</b></th><td>$time</td></tr>
 <tr><th colspan="2"  style="text-align:center"><b>Payment</b></th></tr>
-<tr><th><b>Amount:</b></th><td>$ $amount</td></tr>
+<tr><th><b>Amount:</b></th><td>₱ $amount</td></tr>
 <tr><th><b>Payment Date:</b></th><td>$payment_date</td></tr>
 
 
@@ -767,29 +794,7 @@ function printReport($id)
         }
     }
 
-    class MYPDF extends TCPDF
-    {
-        //Page header
-        public function Header()
-        {
-            // get the current page break margin
-            $bMargin = $this->getBreakMargin();
-            // get current auto-page-break mode
-            $auto_page_break = $this->AutoPageBreak;
-            // disable auto-page-break
-            $this->SetAutoPageBreak(false, 0);
-            // set bacground image
-            $img_file = K_PATH_IMAGES . "watermark.jpg";
-            // die($img_file);
-            $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
-            $this->SetAlpha(0.5);
 
-            // restore auto-page-break status
-            $this->SetAutoPageBreak($auto_page_break, $bMargin);
-            // set the starting point for the page content
-            $this->setPageMark();
-        }
-    }
     $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     // $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, $pageLayout, true, 'UTF-8', false);
     // set document information
