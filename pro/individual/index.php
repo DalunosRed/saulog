@@ -48,12 +48,12 @@ if (!isset($file_access)) die("Direct File Access Denied");
                                 <?php
 
                                     $fee = ($_SESSION['amount'] = getFee($schedule_id, $class));
-                                    echo $number, " x $", $fee, " = $", ($fee * $number), "<hr/>";
+                                    echo $number, " x ₱", $fee, " = ₱", ($fee * $number), "<hr/>";
                                     $fee = $fee * $number;
                                     $amount = intval($fee);
                                     $vat = ceil($fee * 0.01);
-                                    echo "V.A.T Charges = $$vat<br/><br/><hr/>";
-                                    echo "Total = $", $total = $amount + $vat;
+                                    echo "V.A.T Charges = ₱$vat<br/><br/><hr/>";
+                                    echo "Total = ₱", $total = $amount + $vat;
                                     $fee =  intval($total) . "00";
                                     $_SESSION['amount'] =  $total;
                                     $_SESSION['original'] =  $fee;

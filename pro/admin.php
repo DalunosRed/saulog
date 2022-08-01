@@ -128,7 +128,7 @@ $fullname =  "System Administrator";
                         </li>
                         </li>
                         <li class="nav-item">
-                            <a href="admin.php?page=train" class="nav-link      <?php
+                            <a href="admin.php?page=bus" class="nav-link      <?php
                                                                                 echo (@$_GET['page'] == 'bus') ? 'active' : '';
                                                                                 ?>">
                                 <i class="nav-icon fas fa-train"></i>
@@ -160,27 +160,9 @@ $fullname =  "System Administrator";
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a href="admin.php?page=feedback" class="nav-link      <?php
-                                                                                    echo (@$_GET['page'] == 'feedback') ? 'active' : '';
-                                                                                    ?>">
-                                <i class="nav-icon fas fa-mail-bulk"></i>
-                                <p>
-                                    Feedbacks
-                                </p>
-                            </a>
-                        </li>
+         
 
-                        <li class="nav-item">
-                            <a href="admin.php?page=search" class="nav-link      <?php
-                                                                                    echo (@$_GET['page'] == 'search') ? 'active' : '';
-                                                                                    ?>">
-                                <i class="nav-icon fas fa-search"></i>
-                                <p>
-                                    Search
-                                </p>
-                            </a>
-                        </li>
+               
 
 
                         <li class="nav-item">
@@ -219,8 +201,8 @@ $fullname =  "System Administrator";
                 include 'admin/dynamic_schedule.php';
             elseif ($_GET['page'] == 'report')
                 include 'admin/report.php';
-            elseif ($_GET['page'] == 'train')
-                include 'admin/train.php';
+            elseif ($_GET['page'] == 'bus')
+                include 'admin/bus.php';
             elseif ($_GET['page'] == 'users')
                 include 'admin/users.php';
             elseif ($_GET['page'] == 'route')

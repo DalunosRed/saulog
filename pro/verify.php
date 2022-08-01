@@ -2,8 +2,8 @@
 require_once 'session.php';
 require_once '../conn.php';
 require_once '../constants.php';
-// require_once 'helper.php';
-// require_once 'mail_template.php';
+//require_once 'helper.php';
+ //require_once 'mail_template.php';
 
 // $message_text = "<p> Thank you for joining the contest. Sitback while we update you on events and processes involved. </p> 
 //   <p>In order to login, use your email and your first name as password. Once you are logged in, you are advised to change your password. <a href='https://netrepeneurs.com/login/'>Login Here</a></p>
@@ -52,7 +52,7 @@ if (isset($_GET['reference'])) {
       $reference = strtoupper($reference);
       $ins = $conn->query("INSERT INTO payment (passenger_id, schedule_id, amount, ref, date) VALUES ('$user_id','$schedule_id', '$paid', '$reference', '$date')");
       $code = genCode($schedule_id, $user_id, $class);
-      $seat = genSeat($schedule_id, $class, $number);
+    
       $payment_id = $conn->insert_id;
       if ($payment_id > 0) {
 

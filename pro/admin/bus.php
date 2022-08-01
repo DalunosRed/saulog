@@ -30,8 +30,9 @@ $me = "?page=$source";
                                     <tr>
                                         <th>#</th>
                                         <th>Bus Name</th>
-                                        <th>Plate number</th>
                                         <th>Seat Capacity</th>
+                                        <th>Plate number</th>
+                                        
                                         <th style="width: 30%;">Action</th>
                                     </tr>
                                 </thead>
@@ -58,7 +59,8 @@ $me = "?page=$source";
 
                                                 <input type="hidden" class="form-control" name="bus"
                                                     value="<?php echo $id ?>" required id="">
-                                                <button type="submit"
+                                               
+                                                    <button type="submit"
                                                     onclick="return confirm('Are you sure about this?')"
                                                     class="btn btn-danger">
                                                     Delete
@@ -182,21 +184,16 @@ if (isset($_POST['submit'])) {
     $plate_number = $_POST['plate_number'];
     if (!isset($name, $first_seat, $plate_number)) {
         alert("Fill Form Properly!");
-    } else {
-        $conn = connect();
-        //Check if bus exists
-        $check = $conn->query("SELECT * FROM bus WHERE name = '$name' ")->num_rows;
-        if ($check) {
-            alert("bus exists");
-        } else {
+    } else {  
             $ins = $conn->prepare("INSERT INTO bus (name, first_seat, plate_number) VALUES (?,?,?)");
             $ins->bind_param("sss", $name, $first_seat, $plate_number);
             $ins->execute();
             alert("bus Added!");
             load($_SERVER['PHP_SELF'] . "$me");
-        }
+        
     }
 }
+
 
 if (isset($_POST['edit'])) {
     $name = $_POST['name'];

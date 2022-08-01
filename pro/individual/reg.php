@@ -17,7 +17,7 @@ $me = $_SESSION['user_id'];
 
             <div class="card card-success">
                 <div class="card-header">
-                    <h3 class="card-title"><b>Book Bus Tickets</b></h3>
+                    <h3 class="card-title"><b>Book bus Tickets</b></h3>
                 </div>
                 <div class="card-body">
 
@@ -25,19 +25,14 @@ $me = $_SESSION['user_id'];
                         class="table table-hover w-100 table-bordered table-striped<?php //
                                                                                                                                     ?>">
                         <thead>
-                            
                             <tr>
-                                        <th>#</th>
-                                        <th>Bus</th>
-                                        <th>Route</th>
-                                        <th>Ticket Fee</th>                  
-                                        <th>Plate number</th>
-                                        <th>Date/Time</th>
-                                        <th>Actions</th>
-                                    </tr>
+                                <th>#</th>
+                                <th>Route</th>
+                            
+                                <th>Date/Time</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
-                        
                         <tbody>
                             <?php
                             $row = querySchedule('future');
@@ -57,28 +52,14 @@ $me = $_SESSION['user_id'];
                                         continue;
                                     }
                                 }
-                                $id = $fetch['id']; ?>
+                                $id = $fetch['id']; ?><tr>
+                                <td><?php echo ++$sn; ?></td>
+                                <td><?php echo $fullname =  getRoutePath($fetch['route_id']);
+                                        ?></td>
+                                
+                                <td><?php echo $fetch['date'], " / ", formatTime($fetch['time']); ?></td>
 
-                            
-                                        <!-- /.modal-content -->
-                                           <?php
-                                    $row = $conn->query("SELECT * FROM schedule ORDER BY id DESC");
-
-                                    if ($row->num_rows < 1) echo "No Records Yet";
-                                    $sn = 0;
-                                    while ($fetch = $row->fetch_assoc()) {
-                                        $id = $fetch['id']; ?><tr>
-                                        <td><?php echo ++$sn; ?></td>
-                                        <td><?php echo getBusName($fetch['bus_id']); ?></td>
-                                        <td><?php echo getRoutePath($fetch['route_id']);
-                                                $fullname = " Schedule" ?></td>
-                                        <td>₱<?php echo ($fetch['first_fee']); ?></td>
-                                        <td> <?php echo ($fetch['plate_number']); ?></td>
-                                   
-                                       
-                                        <td><?php echo $fetch['date'], " / ", formatTime($fetch['time']); ?></td>
-
-                                        <td>
+                                <td>
                                     <button type="button" class="btn btn-info" data-toggle="modal"
                                         data-target="#book<?php echo $id ?>">
                                         Book
@@ -112,109 +93,19 @@ $me = $_SESSION['user_id'];
                                                         name="number" class="form-control" id="">
                                                 </p>
                                                 <p>
-                                                   Amount 
+                                                    Amount : <select name="class" required class="form-control" id="">
                                                       
-                                                        <option value="first">(₱
-                                                            <?php echo ($fetch['first_fee']); ?>)</option>
-                                                 
-                                           
+                                                        <option value="first"> ₱
+                                                            <?php echo ($fetch['fee']); ?></option>
+                                                    
                                                 </p>
                                                 <input type="submit" name="submit" class="btn btn-success"
                                                     value="Proceed">
 
                                             </form>
 
-
                                         </div>
-
-            
-                                        </td>
-                                    </tr>
-
-                                    <div class="modal fade" id="edit<?php echo $id ?>">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">Editing <?php echo $fullname;
-
-
-                                                                                        ?> &#128642;</h4>
-                                                    <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-
-
-                                                    <form action="" method="post">
-                                                        <input type="hidden" class="form-control" name="id"
-                                                            value="<?php echo $id ?>" required id="">
-
-                                                        <p>Bus : <select class="form-control" name="bus_id" required
-                                                                id="">
-                                                                <option value="">Select Bus</option>
-                                                                <?php
-                                                                    $cons = connect()->query("SELECT * FROM bus");
-                                                                    while ($t = $cons->fetch_assoc()) {
-                                                                        echo "<option " . ($fetch['bus_id'] == $t['id'] ? 'selected="selected"' : '') . " value='" . $t['id'] . "'>" . $t['name'] . "</option>";
-                                                                    }
-                                                                    ?>
-                                                            </select>
-                                                        </p>
-
-                                                        <p>Route : <select class="form-control" name="route_id" required
-                                                                id="">
-                                                                <option value="">Select Route</option>
-                                                                <?php
-                                                                    $cond = connect()->query("SELECT * FROM route");
-                                                                    while ($r = $cond->fetch_assoc()) {
-                                                                        echo "<option  " . ($fetch['route_id'] == $r['id'] ? 'selected="selected"' : '') . " value='" . $r['id'] . "'>" . getRoutePath($r['id']) . "</option>";
-                                                                    }
-                                                                    ?>
-                                                            </select>
-                                                        </p>
-                                                        <p>
-                                                            Ticket Fee : <input class="form-control"
-                                                                type="number" value="<?php echo $fetch['first_fee'] ?>"
-                                                                name="first_fee" required id="">
-                                                        </p>
-                                                        <p>
-                                                            Second Class Charge : <input class="form-control"
-                                                                type="number" value="<?php echo $fetch['plate_number'] ?>"
-                                                                name="plate_number" required id="">
-                                                        </p>
-                                                     
-                                                        <p>
-                                                            Date :
-                                                            <input type="date" class="form-control"
-                                                                onchange="check(this.value)" id="date"
-                                                                placeholder="Date" name="date" required
-                                                                value="<?php echo (date('Y-m-d', strtotime($fetch["date"]))) ?>">
-
-                                                        </p>
-                                                        <p>
-                                                            Time : <input class="form-control" type="time"
-                                                                value="<?php echo $fetch['time'] ?>" name="time"
-                                                                required id="">
-                                                        </p>
-                                                        <p class="float-right"><input type="submit" name="edit"
-                                                                class="btn btn-success" value="Edit Schedule"></p>
-                                                    </form>
-
-                                                    <div class="modal-footer justify-content-between">
-                                                        <button type="button" class="btn btn-default"
-                                                            data-dismiss="modal">Close</button>
-                                                    </div>
-                                                </div>
-                                                <!-- /.modal-content -->
-                                            </div>
-                                            <!-- /.modal-dialog -->
-                                        </div>
-                                        <!-- /.modal -->
-                                        <?php
-                                    }
-                                        ?>
+                                        <!-- /.modal-content -->
                                     </div>
                                     <!-- /.modal-dialog -->
                                 </div>
@@ -222,7 +113,6 @@ $me = $_SESSION['user_id'];
                                 <?php
                             }
                                 ?>
-                                
 
                         </tbody>
                         

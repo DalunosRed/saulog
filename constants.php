@@ -19,12 +19,12 @@ date_default_timezone_set("Africa/Lagos");
 $date = date('D, d-M-Y h:i:s A');;
 $date_small = date('d-M-Y');;
 //INSERT YOUR OWN PAYSTACK API KEYS
-$paystack = "#YOUR_API_KEY"; //Do not change this! Redirect URL http://localhost/train/pro/verify.php
+$paystack = "sk_test_b630a83128c105b683ddf5a9b4d622e6aff9adcd"; //Do not change this! Redirect URL http://localhost/train/pro/verify.php
 if (!function_exists('connect')) {
 
     function connect()
     {
-        $con = new mysqli("localhost", "root", "", "otrsphp");
+        $con = new mysqli("localhost", "root", "", "saulog");
         if (!$con) die("Database is being upgraded!");
         return $con;
     }
@@ -272,35 +272,6 @@ function sendMail($to, $subject, $msg)
 
 
 
-function genSeat($id, $type, $number)
-{
-    $conn = connect();
-    $type_seat = $conn->query("SELECT bus.first_seat as first FROM schedule INNER JOIN bus ON bus.id = schedule.bus WHERE schedule.id = '$id'")->fetch_assoc();
-    $me = $type_seat[$type];
-    $query = $conn->query("SELECT SUM(no) AS no FROM booked WHERE schedule_id = '$id' AND class = '$type'")->fetch_assoc();
-    $no = $query['no'];
-    if ($no == null) $no = 1;
-    else $no++;
-    //Multiple Seats or Not
-    if ($number == 1) {
-        while (strlen($no) != strlen($me)) {
-            $no = "0" . $no;
-        }
-        return strtoupper(substr($type, 0, 1)) . "$no";
-    } else {
-        $start = $no;
-        $end = $no + ($number - 1);
-        while (strlen($start) != strlen($me)) {
-            $start = "0" . $start;
-        }
-        while (strlen($end) != strlen($me)) {
-            $end = "0" . $end;
-        }
-        $append = strtoupper(substr($type, 0, 1));
-
-        return $append . $start . " - " . $append . $end;
-    }
-}
 
 
 function genCode($id, $user, $class)
@@ -431,30 +402,16 @@ function getRouteFromSchedule($id)
 
 function getFee($id, $type = 'plate')
 {
-    if ($type == 'plate') {
-        $type = 'plate_number';
+    if ($type == 'bus_number') {
+        $type = 'bus_number';
     } else {
-        $type = 'first_fee';
+        $type = 'fee';
     }
     $q = connect()->query("SELECT $type FROM schedule WHERE id = '$id'")->fetch_assoc();
     return $q[$type];
 }
 
-function getTotalBookByType($id)
-{
 
-    $con =  connect()->query("SELECT SUM(no) as no FROM `booked` WHERE schedule_id = '$id' AND class = 'plate'")->fetch_assoc();
-    $con2 =  connect()->query("SELECT SUM(no) as no FROM `booked` WHERE schedule_id = '$id' AND class = 'first'")->fetch_assoc();
-    $no = $con['no'];
-    $no2 = $con2['no'];
-    $num = $no == null ? 0 :  $con['no'];
-    $num2 = $no2 == null ? 0 :  $con2['no'];
-    $qu = connect()->query("SELECT bus.first_seat as first, FROM schedule INNER JOIN bus ON bus.id = schedule.bus WHERE schedule.id = '$id'")->fetch_assoc();
-    $first = $qu['first'];
-    $first = intval($first);
-    $num = intval($num);
-    return array("first" => $first, "first_booked" => $num);
-}
 
 function isScheduleActive($id)
 {
@@ -478,6 +435,11 @@ function getBusName($id)
 {
     $val = connect()->query("SELECT name FROM bus WHERE id = '$id'")->fetch_assoc();
     return $val['name'];
+}
+function getPlateNumber($id)
+{
+    $val = connect()->query("SELECT plate_number FROM bus WHERE id = '$id'")->fetch_assoc();
+    return $val['plate_number'];
 }
 function alert($msg)
 {

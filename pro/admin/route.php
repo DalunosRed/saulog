@@ -74,7 +74,7 @@ $me = "?page=$source"
                                                     <h4 class="modal-title">Editing <?php echo $fullname;
 
 
-                                                                                        ?> &#128642;</h4>
+                                                                                        ?> </h4>
                                                     <button type="button" class="close" data-dismiss="modal"
                                                         aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
