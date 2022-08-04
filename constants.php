@@ -276,7 +276,7 @@ function genSeat($id, $type, $number)
     $me = $type_seat[$type];
     $query = $conn->query("SELECT SUM(no) AS no FROM booked WHERE schedule_id = '$id'")->fetch_assoc();
     $no = $query['no'];
-    if ($no == null) $no = 1;
+    if ($no == null) $no = 0;
     else $no++;
     //Multiple Seats or Not
     if ($number == 1) {
@@ -428,6 +428,7 @@ function getRouteFromSchedule($id)
     return getRoutePath($q['id']);
 }
 
+
 function getFee($id, $type = 'plate_number')
 {
     if ($type == 'bus_number') {
@@ -464,6 +465,10 @@ function getBusName($id)
     $val = connect()->query("SELECT name FROM bus WHERE id = '$id'")->fetch_assoc();
     return $val['name'];
 }
+
+
+
+
 
 function getBusNum($id)
 {
@@ -717,7 +722,7 @@ function printReport($id)
 {
     ob_start();
     $con = connect();
-    $getCount = (connect()->query("SELECT schedule.date as date, schedule.time as time, schedule.bus_id as bus, schedule.route_id as route, booked.seat as seat, passenger.name as fullname, booked.code as code, booked.class as class FROM booked INNER JOIN schedule ON schedule.id = booked.schedule_id INNER JOIN passenger ON passenger.id = booked.user_id WHERE booked.schedule_id = '$id' ORDER BY class "));
+    $getCount = (connect()->query("SELECT schedule.date as date, schedule.time as time, schedule.bus_id as bus, schedule.route_id as route, booked.seat as seat, passenger.name as fullname, booked.code as code FROM booked INNER JOIN schedule ON schedule.id = booked.schedule_id INNER JOIN passenger ON passenger.id = booked.user_id WHERE booked.schedule_id = '$id' ORDER BY code "));
 
     $output = "<style>
     .a {
@@ -757,7 +762,7 @@ function printReport($id)
     </style>";
     $sn = 0;
     $schedule = getRouteFromSchedule($id);
-    if ($getCount->num_rows < 1) {
+    if ($getCount-> num_rows < 1) {
         echo "<script>alert('No passenger yet for this schedule!');window.location='admin.php?page=report'</script>";
         exit;
     }
@@ -768,9 +773,9 @@ function printReport($id)
         $route = getRouteFromSchedule($id);
         $time = formatTime($time);
         $sn++;
-        $output .= '<tr><td class="a">' . $sn . '</td><td class="c">' . substr(ucwords(strtolower($row['fullname'])), 0, 15) . '</td><td class="shrink">' . $row['code'] . ' (' . ucwords(strtolower($row['class'])) . ')</td><td class="b">' . (strtoupper($row['seat'])) . '</td></tr>';
+        $output .= '<tr><td class="a">' . $sn . '</td><td class="c">' . substr(ucwords(strtolower($row['fullname'])), 0, 15) . '</td><td class="shrink">' . $row['code'] . ' </td><td class="b">' . (strtoupper($row['seat'])) . '</td></tr>';
     }
-    $start = '<table class="table" width="100%" border="1"><tr><th class="a">SN</th><th  class="c">Full Name</th><th  class="shrink">Code/Class</th><th  class="b">Seat No</th></tr>';
+    $start = '<table class="table" width="100%" border="1"><tr><th class="a">SN</th><th  class="c">Full Name</th><th  class="shrink">Ticket Number</th><th  class="b">Seat No</th></tr>';
     $end = '</table>';
     $result = $start . $output . $end;
     // die($result);
@@ -791,6 +796,29 @@ function printReport($id)
         if (@file_exists($tcpdf_include_path)) {
             require_once $tcpdf_include_path;
             break;
+        }
+    }
+    class MYPDF extends TCPDF
+    {
+        //Page header
+        public function Header()
+        {
+            // get the current page break margin
+            $bMargin = $this->getBreakMargin();
+            // get current auto-page-break mode
+            $auto_page_break = $this->AutoPageBreak;
+            // disable auto-page-break
+            $this->SetAutoPageBreak(false, 0);
+            // set bacground image
+            $img_file = K_PATH_IMAGES . "watermark.jpg";
+            // die($img_file);
+            $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+            $this->SetAlpha(0.5);
+
+            // restore auto-page-break status
+            $this->SetAutoPageBreak($auto_page_break, $bMargin);
+            // set the starting point for the page content
+            $this->setPageMark();
         }
     }
 
@@ -842,7 +870,7 @@ function printReport($id)
     // set text shadow effect
     $pdf->setTextShadow(array('enabled' => true, 'depth_w' => 0.2, 'depth_h' => 0.2, 'color' => array(196, 196, 196), 'opacity' => 1, 'blend_mode' => 'Normal'));
     // Set some content to print
-    $html = '<h5 style="text-align:center"><img src="images/trainlg.png" width="80" height="80"/><br/>ONLINE TICKET RESERVATION SYSTEM<br/> LIST OF BOOKINGS  FOR ' . $date . ' (' . $time . ')</h5> <div style="text-align:right; font-family:courier;font-weight:bold"><font size="+1">Bus ' . $bus . ' (' . $sn . ' Passengers) : ' . $schedule . ' </font></div>' . $result;
+    $html = '<h5 style="text-align:center"><br/>SAULOG TRANSIT<br/> LIST OF BOOKINGS  FOR ' . $date . ' (' . $time . ')</h5> <div style="text-align:right; font-family:courier;font-weight:bold"><font size="+1">Bus ' . $bus . ' (' . $sn . ' Passengers) : ' . $schedule . ' </font></div>' . $result;
     // die($html);
     // Print text using writeHTMLCell()
     $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);

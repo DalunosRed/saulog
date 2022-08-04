@@ -149,14 +149,7 @@ $fullname =  "System Administrator";
                             </a>
 
                         </li>
-                        <li class="nav-item">
-                            <a href="admin.php?page=payment" class="nav-link      <?php
-                                                                                    echo (@$_GET['page'] == 'payment') ? 'active' : '';
-                                                                                    ?>">
-                                <i class="nav-icon fas fa-dollar-sign"></i>
-                                <p>
-                                    Payments
-                                </p>
+                       
                             </a>
                         </li>
 
@@ -211,8 +204,7 @@ $fullname =  "System Administrator";
                 @session_destroy();
                 echo "<script>alert('You are being logged out'); window.location='../';</script>";
                 exit;
-            } elseif ($_GET['page'] == 'payment')
-                include 'admin/sales.php';
+            } 
 
             elseif ($_GET['page'] == 'feedback')
                 include 'admin/feedback.php';

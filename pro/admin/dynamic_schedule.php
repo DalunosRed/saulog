@@ -35,6 +35,7 @@ $me = "?page=$source";
                                         <th>Route</th>
                                         <th>Ticket Fee</th>                  
                                         <th>Bus number</th>
+                                        <th>Seat Capacity</th>
                                         <th>Date/Time</th>
                                         <th>Actions</th>
                                     </tr>
@@ -53,8 +54,7 @@ $me = "?page=$source";
                                                 $fullname = " Schedule" ?></td>
                                         <td>₱<?php echo ($fetch['fee']); ?></td>
                                         <td> <?php echo ($fetch['bus_number']); ?></td>
-                                   
-                                       
+                                        <td> <?php echo ($fetch['capacity']); ?></td>
                                         <td><?php echo $fetch['date'], " / ", formatTime($fetch['time']); ?></td>
 
                                         <td>
@@ -139,7 +139,11 @@ $me = "?page=$source";
 
                      Bus number: <input class="form-control" type="text" name="bus_number" required
                          id="">
-        </div>
+                      </div>
+                  <div class="col-sm-6">  
+                Capacity: <input class="form-control" type="number" name="capacity" required
+                            id="">
+                            </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-6">
@@ -185,6 +189,7 @@ if (isset($_POST['submit'])) {
     $bus_id = $_POST['bus_id'];
     $fee = $_POST['fee'];
     $bus_number = $_POST['bus_number'];
+    $capacity = $_POST['capacity'];
     $date = $_POST['date'];
     $date = formatDate($date);
     // die($date);
@@ -194,8 +199,8 @@ if (isset($_POST['submit'])) {
         alert("Fill Form Properly!");
     } else {
         $conn = connect();
-        $ins = $conn->prepare("INSERT INTO `schedule`(`bus_id`, `route_id`, `date`, `time`, `fee`, `bus_number`) VALUES (?,?,?,?,?,?)");
-        $ins->bind_param("iissii", $bus_id, $route_id, $date, $time, $fee, $bus_number);
+        $ins = $conn->prepare("INSERT INTO `schedule`(`bus_id`, `route_id`, `date`, `time`, `fee`, `bus_number`, `capacity`) VALUES (?,?,?,?,?,?,?)");
+        $ins->bind_param("iissiii", $bus_id, $route_id, $date, $time, $fee, $bus_number, $capacity);
         $ins->execute();
         alert("Schedule Added!");
         load($_SERVER['PHP_SELF'] . "$me");

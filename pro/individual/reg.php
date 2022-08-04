@@ -28,7 +28,7 @@ $me = $_SESSION['user_id'];
                             <tr>
                                 <th>#</th>
                                 <th>Route</th>
-                            
+                                <th>Capacity</th>
                                 <th>Date/Time</th>
                                 <th>Actions</th>
                             </tr>
@@ -42,6 +42,8 @@ $me = $_SESSION['user_id'];
                             $sn = 0;
                             while ($fetch = $row->fetch_assoc()) {
                                 //Check if the current date is same with Database scheduled date
+                                $cap_available= ($fetch["capacity"]);
+
                                 $db_date = $fetch['date'];
                                 if ($db_date == date('d-m-Y')) {
                                     //Oh yes, so what should happen?
@@ -56,15 +58,16 @@ $me = $_SESSION['user_id'];
                                 <td><?php echo ++$sn; ?></td>
                                 <td><?php echo $fullname =  getRoutePath($fetch['route_id']);
                                         ?></td>
+                              <td> <?php echo ($fetch['capacity']); ?></td>
                                 
                                 <td><?php echo $fetch['date'], " / ", formatTime($fetch['time']); ?></td>
 
                                 <td>
-                                    <button type="button" class="btn btn-info" data-toggle="modal"
-                                        data-target="#book<?php echo $id ?>">
-                                        Book
-                                    </button>
-                                </td>
+                                        <button type="button" class="btn btn-info" data-toggle="modal"
+                                            data-target="#book<?php echo $id ?>">
+                                            Book
+                                        </button>
+                                    </td>
                             </tr>
 
                             <div class="modal fade" id="book<?php echo $id ?>">
@@ -88,20 +91,27 @@ $me = $_SESSION['user_id'];
                                                     value="<?php echo $id ?>" required id="">
 
                                                 <p>Number of Tickets (If you are the only one, leave as it is) :
-                                                    <input type="number" min='1' value="1"
-                                                        max='<?php echo $max_first >= $max_second ? $max_first : $max_second ?>'
-                                                        name="number" class="form-control" id="">
+                                                    <input type="number" min='0' value="0" max='<?php echo ($fetch['capacity']);?>'
+                                                     
+                                                        name="number" name="quantity" class="form-control" id="">
                                                 </p>
                                                 <p>
+                                                    
                                                     Amount : <select name="class" required class="form-control" id="">
                                                       
                                                         <option value="first"> ₱
                                                             <?php echo ($fetch['fee']); ?></option>
-                                                    
                                                 </p>
-                                                <input type="submit" name="submit" class="btn btn-success"
-                                                    value="Proceed">
 
+                                                <?php
+                                                    if ($cap_available!=0) echo '<a href="individual.php?loc=' . $id . '"> <input type="submit" id="book-btn" name="submit" class="btn btn-success book-js"
+                                                    value="Proceed"></a>';
+                                                   
+                                                   else echo '<input type="submit" disabled="disabled" class="btn btn-danger" value="Sold out">'; ?>
+
+
+                                              
+                                                
                                             </form>
 
                                         </div>

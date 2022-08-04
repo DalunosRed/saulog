@@ -18,7 +18,8 @@ if (isset($_GET['reference'])) {
   $paid = $_SESSION['original'];
   $schedule_id = $_SESSION['schedule'];
   $number = $_SESSION['no'];
-  $class = $_SESSION['class'];
+  $class = $_SESSION['class']; 
+
   $price = 0;
 
   $amount = $_SESSION['amount'] . "00";
@@ -50,13 +51,14 @@ if (isset($_GET['reference'])) {
       //confirm access to payment success page
       $paid = substr($paid, 0, -2);
       $reference = strtoupper($reference);
-      $ins = $conn->query("INSERT INTO payment (passenger_id, schedule_id, amount, ref, date) VALUES ('$user_id','$schedule_id', '$paid', '$reference', '$date')");
-      $code = genCode($schedule_id, $user_id, $class);
+      $ins = $conn->query("INSERT INTO payment (passenger_id, schedule_id, amount, ref, date) VALUES ('$user_id','$schedule_id', '$paid', '$reference', '$date')");           $code = genCode($schedule_id, $user_id, $class);
       $seat = genSeat($schedule_id, $class, $number);
       $payment_id = $conn->insert_id;
       if ($payment_id > 0) {
 
         $conn->query("INSERT INTO booked (payment_id, schedule_id, user_id, code, no, date, seat) VALUES ('$payment_id','$schedule_id', '$user_id', '$code', '$number', '$date' , '$seat')");
+        
+        $res="UPDATE schedule SET capacity= booked.no as no - .schedule.capacity as capacity where  schedule_id =$id ";
         unset($_SESSION['discount']);
         unset($_SESSION['amount']);
         unset($_SESSION['original']);
@@ -65,6 +67,7 @@ if (isset($_GET['reference'])) {
         unset($_SESSION['class']);
         $_SESSION['pay_success'] = 'true';
         $_SESSION['has_paid'] = 'true';
+        
         header("Location: individual.php?page=paid&now=true");
         exit();
       }
@@ -80,3 +83,4 @@ if (isset($_GET['reference'])) {
 }
 header("Location: individual.php?page=pay&error=payment");
 exit();
+
