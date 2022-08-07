@@ -93,7 +93,7 @@ $me = $_SESSION['user_id'];
                                                 <p>Number of Tickets (If you are the only one, leave as it is) :
                                                     <input type="number" min='0' value="0" max='<?php echo ($fetch['capacity']);?>'
                                                      
-                                                        name="number" name="quantity" class="form-control" id="">
+                                                        name="number" name="quantity" class="form-control" id="quantity">
                                                 </p>
                                                 <p>
                                                     
@@ -105,7 +105,7 @@ $me = $_SESSION['user_id'];
 
                                                 <?php
                                                     if ($cap_available!=0) echo '<a href="individual.php?loc=' . $id . '"> <input type="submit" id="book-btn" name="submit" class="btn btn-success book-js"
-                                                    value="Proceed"></a>';
+                                                    value="Proceed" data-id="'.$id.'" data-capacity="'.$fetch['capacity'].'"></a>';
                                                    
                                                    else echo '<input type="submit" disabled="disabled" class="btn btn-danger" value="Sold out">'; ?>
 
@@ -136,3 +136,7 @@ $me = $_SESSION['user_id'];
     </form>
 
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="individual/pay.js"></script>
+<script src="/saulog/js/book.js"></script>

@@ -1,4 +1,5 @@
 $('.book-js').on('click', '#minusC', function(event) {
+
     event.preventDefault();
     total = 0
     $('.book-js').html('')
@@ -28,3 +29,33 @@ $('.book-js').on('click', '#minusC', function(event) {
     //get total
     getTotal()
   });
+
+
+
+  $('.book-js').click(function (e) { 
+
+  
+    let ref = $(this);
+
+    console.log(ref.attr('data-capacity'));
+    console.log($('#quantity').val());
+    console.log(ref.attr('data-id') );
+
+    $.ajax({
+      url: 'individual/capacitySubtract.php',
+      type: 'POST',
+      dataType: 'JSON',
+      data: {
+        quantity: $('#quantity').val(),
+         id : ref.attr('data-id'),
+         capacity : ref.attr('data-capacity')
+       }
+     })
+    .done(function() {
+      
+    })
+    .fail(function(xhr) {
+      console.log("error" + xhr.responseText + xhr.status);
+    })
+});
+ 
