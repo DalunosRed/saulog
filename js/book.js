@@ -34,11 +34,10 @@ $('.book-js').on('click', '#minusC', function(event) {
 
   $('.book-js').click(function (e) { 
 
-  
     let ref = $(this);
 
     console.log(ref.attr('data-capacity'));
-    console.log($('#quantity').val());
+    console.log($(this).parent().parent().find('.q-p').children('#quantity').val());
     console.log(ref.attr('data-id') );
 
     $.ajax({
@@ -46,7 +45,7 @@ $('.book-js').on('click', '#minusC', function(event) {
       type: 'POST',
       dataType: 'JSON',
       data: {
-        quantity: $('#quantity').val(),
+        quantity: $(this).parent().parent().find('.q-p').children('#quantity').val(),
          id : ref.attr('data-id'),
          capacity : ref.attr('data-capacity')
        }

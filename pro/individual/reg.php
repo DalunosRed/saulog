@@ -90,7 +90,7 @@ $me = $_SESSION['user_id'];
                                                 <input type="hidden" class="form-control" name="id"
                                                     value="<?php echo $id ?>" required id="">
 
-                                                <p>Number of Tickets (If you are the only one, leave as it is) :
+                                                <p class="q-p">Number of Tickets (If you are the only one, leave as it is) :
                                                     <input type="number" min='0' value="0" max='<?php echo ($fetch['capacity']);?>'
                                                      
                                                         name="number" name="quantity" class="form-control" id="quantity">
